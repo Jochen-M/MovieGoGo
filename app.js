@@ -92,7 +92,7 @@ app.post('/admin/movie/new', function(req, res){
 			director: movieObj.director,
 			country: movieObj.country,
 			language: movieObj.language,
-			poster: '/images/sjbbb.jpg',	//movieObj.poster,
+			poster: movieObj.poster,
 			flash: movieObj.flash,
 			summary: movieObj.summary,
 			showAt: movieObj.showAt
