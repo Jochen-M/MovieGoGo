@@ -4,14 +4,35 @@ let Comment = require('../models/comment');
 exports.save = function(req, res){
 	let _comment = req.body.comment;
 	let movieId = _comment.movie;
-	let comment = new Comment(_comment);
 
-	comment.save(function(err, comment){
+	if(_comment.cid){
+		Comment.findById(_comment.cid, function(err, comment){
+			let reply = {
+				from: _comment.from,
+				to: _comment.tid,
+				content: _comment.content
+			};
 
-		if(err){
-			console.log(err);
-		}
+			comment.reply.push(reply);
 
-		res.redirect('/movie/' + movieId);	// 评论后返回当前电影
-	});
+			comment.save(function(err, comment){
+				if(err){
+					console.log(err);
+				}
+
+				res.redirect('/movie/' + movieId);
+			});
+		});
+	}else{
+		let comment = new Comment(_comment);
+		
+		comment.save(function(err, comment){
+
+			if(err){
+				console.log(err);
+			}
+
+			res.redirect('/movie/' + movieId);	// 评论后返回当前电影
+		});
+	}
 };

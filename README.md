@@ -1,4 +1,4 @@
-# MovieGoGo
+# MovieGoGo 2.0.0
 
 A movie web application.
 
