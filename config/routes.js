@@ -25,6 +25,7 @@ module.exports = function(app) {
 
 	// Movie
 	app.post('/admin/movie/save', User.signinRequired, User.adminRequired, Movie.save);
+	app.get('/movie/search', Movie.search);
 	app.get('/movie/:id', Movie.detail);
 	app.get('/admin/movie/new', User.signinRequired, User.adminRequired, Movie.new);
 	app.get('/admin/movie/update/:id', User.signinRequired, User.adminRequired, Movie.update);
@@ -38,4 +39,5 @@ module.exports = function(app) {
 	app.post('/admin/category/save', User.signinRequired, User.adminRequired, Category.save);
 	app.get('/admin/category/new', User.signinRequired, User.adminRequired, Category.new);
 	app.get('/admin/category/list', User.signinRequired, User.adminRequired, Category.list);
+	app.get('/category/search', Category.search);
 };

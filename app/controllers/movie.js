@@ -124,3 +124,22 @@ exports.delete = function(req, res){
 		});
 	}
 };
+
+exports.search = function(req, res){
+	let keyword = req.query.keyword;
+	let page = parseInt(req.query.page) || 1;
+	let perPage = 5;
+	Movie
+		.find({title: new RegExp('.*' + keyword + '.*')}, function(err, movies){
+			if(err){
+				console.log(err);
+			}
+			res.render('results', {
+				title: '分类',
+				keyword: keyword,
+				currentPage: page,
+				totalPage: Math.ceil(movies.length / perPage),
+				movies: movies
+			})
+		})
+};
