@@ -1,5 +1,6 @@
 let Movie = require('../models/movie');
 let Comment = require('../models/comment');
+let Category = require('../models/category');
 let _ = require('underscore');
 
 // Routes for movie
@@ -22,18 +23,12 @@ exports.detail = function(req, res){
 };
 
 exports.new = function(req, res){
-	res.render('admin', {
-		title: '后台录入页',
-		movie: {
-			title: "",
-			director: "",
-			country: "",
-			language: "",
-			poster: "",
-			flash: "",
-			showAt: "",
-			summary: ""
-		}
+	Category.find({}, function(err, categories){
+		res.render('admin', {
+			title: '后台录入页',
+			categories: categories,
+			movie: {}
+		})
 	});
 };
 
@@ -42,14 +37,12 @@ exports.save = function(req, res){
 	let movieObj = req.body.movie;
 	let _movie;
 
-	if(id != 'undefined'){
+	if(id){
 		Movie.findById(id, function(err, movie){
 			if(err){
 				console.log(err);
 			}
-
 			_movie = _.extend(movie, movieObj);
-
 			_movie.save(function(err){
 				if(err){
 					console.log(err);
@@ -59,23 +52,18 @@ exports.save = function(req, res){
 			});
 		});
 	}else{
-		_movie = new Movie({
-			title: movieObj.title,
-			director: movieObj.director,
-			country: movieObj.country,
-			language: movieObj.language,
-			poster: movieObj.poster,
-			flash: movieObj.flash,
-			summary: movieObj.summary,
-			showAt: movieObj.showAt
-		});
-
-		_movie.save(function(err){
+		_movie = new Movie(movieObj);
+		let categoryId = _movie.category;
+		_movie.save(function(err, movie){
 			if(err){
 				console.log(err);
 			}
-
-			res.redirect('/admin/movie/list');
+			Category.findById(categoryId, function(err, category){
+				category.movies.push(movie._id);
+				category.save(function(err, category){
+					res.redirect('/admin/movie/list');
+				});
+			})
 		});
 	}
 };
@@ -85,9 +73,12 @@ exports.update = function(req, res){
 
 	if(id){
 		Movie.findById(id, function(err, movie){
-			res.render('admin', {
-				title: '后台更新页',
-				movie: movie
+			Category.find({}, function(err, categories){
+				res.render('admin', {
+					title: '后台更新页',
+					movie: movie,
+					categories: categories
+				});
 			});
 		});
 	}

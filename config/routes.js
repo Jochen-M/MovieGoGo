@@ -2,6 +2,7 @@ let Index = require('../app/controllers/index');
 let User = require('../app/controllers/user');
 let Movie = require('../app/controllers/movie');
 let Comment = require('../app/controllers/comment');
+let Category = require('../app/controllers/category');
 
 module.exports = function(app) {
 	// pre handle user
@@ -32,4 +33,9 @@ module.exports = function(app) {
 
 	// Comment
 	app.post('/user/comment', User.signinRequired, Comment.save);
+
+	// Category
+	app.post('/admin/category/save', User.signinRequired, User.adminRequired, Category.save);
+	app.get('/admin/category/new', User.signinRequired, User.adminRequired, Category.new);
+	app.get('/admin/category/list', User.signinRequired, User.adminRequired, Category.list);
 };
