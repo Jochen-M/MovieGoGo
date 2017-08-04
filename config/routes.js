@@ -24,10 +24,10 @@ module.exports = function(app) {
 	app.get('/admin/user/list', User.signinRequired, User.adminRequired, User.list);
 
 	// Movie
-	app.post('/admin/movie/save', User.signinRequired, User.adminRequired, Movie.save);
+	app.post('/admin/movie/save', User.signinRequired, User.adminRequired, Movie.posterUploaded, Movie.save);
 	app.get('/movie/search', Movie.search);
 	app.get('/movie/:id', Movie.detail);
-	app.get('/admin/movie/new', User.signinRequired, User.adminRequired, Movie.new);
+	app.get('/admin/movie/new', User.signinRequired, User.adminRequired,  Movie.new);
 	app.get('/admin/movie/update/:id', User.signinRequired, User.adminRequired, Movie.update);
 	app.get('/admin/movie/list', User.signinRequired, User.adminRequired, Movie.list);
 	app.delete('/admin/movie/delete', User.signinRequired, User.adminRequired, Movie.delete);

@@ -9,6 +9,7 @@ let mongoose = require('mongoose');
 let mongoStore = require('connect-mongo')(session);
 let path = require('path');
 let logger = require('morgan');
+let multipart = require('connect-multiparty');
 
 mongoose.Promise = global.Promise;
 mongoose.connect(dbUrl);
@@ -19,6 +20,7 @@ app.set('views', './app/views/pages');
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(bodyParser.json());
+app.use(multipart());
 app.use(cookieParser());
 app.use(session({
 	secret: 'moviegogo',

@@ -2,10 +2,18 @@ let Movie = require('../models/movie');
 let Comment = require('../models/comment');
 let Category = require('../models/category');
 let _ = require('underscore');
+let fs = require('fs');
+let path = require('path');
 
 // Routes for movie
 exports.detail = function(req, res){
 	let id = req.params.id;
+
+	Movie.update({_id: id}, {$inc: {pv: 1}}, function(err){
+		if(err){
+			console.log(err);
+		}
+	})
 
 	Movie.findById(id, function(err, movie){
 		Comment
@@ -36,6 +44,10 @@ exports.save = function(req, res){
 	let id = req.body.movie._id;
 	let movieObj = req.body.movie;
 	let _movie;
+
+	if(req.newPosterName){
+		movieObj.poster = req.newPosterName;
+	}
 
 	if(id){
 		Movie.findById(id, function(err, movie){
@@ -99,16 +111,18 @@ exports.update = function(req, res){
 };
 
 exports.list = function(req, res){
-	Movie.fetch(function(err, movies){
-		if(err){
-			console.log(err);
-		}
-
-		res.render('list', {
-			title: '列表页',
-			movies: movies
-		});
-	})
+	Movie
+		.find({})
+		.populate('category', 'name')
+		.exec(function(err, movies){
+			if(err){
+				console.log(err);
+			}
+			res.render('list', {
+				title: '列表页',
+				movies: movies
+			});
+		})
 };
 
 exports.delete = function(req, res){
@@ -143,3 +157,26 @@ exports.search = function(req, res){
 			})
 		})
 };
+
+// middleware for movie
+exports.posterUploaded = function(req, res, next){
+	let posterData = req.files.uploadPoster;
+	let filePath = posterData.path;
+	let originalFilename = posterData.originalFilename;
+
+	if(originalFilename){
+		fs.readFile(filePath, function(err, data){
+			let timestamp = Date.now();
+			let type = posterData.type.split('/')[1];
+			let newPosterName = timestamp + '.' + type;
+			let newPath = path.join(__dirname, '../../public/images/' + newPosterName);
+
+			fs.writeFile(newPath, data, function(err){
+				req.newPosterName = '/images/' + newPosterName;
+				next();
+			})
+		})
+	}else{
+		next();
+	}
+}

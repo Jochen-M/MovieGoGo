@@ -15,6 +15,10 @@ let MovieSchema = new Schema({
 	flash: String,
 	summary: String,
 	showAt: Number,
+	pv: {
+		type: Number,
+		default: 0
+	},
 	meta: {
 		createAt: {
 			type: Date,
